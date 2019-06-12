@@ -1,5 +1,5 @@
 import { Universe, Cell } from "skylark-wasm";
-import { memory } from "skylark-wasm/skylark_wasm_bg";
+import { memory } from "skylark-wasm/skylark_bg";
 
 const CELL_SIZE = 5; // px
 const GRID_COLOR = "#CCCCCC";

@@ -1,11 +1,15 @@
 [package]
-name = "skylark-wasm"
+name = "skylark"
 version = "0.1.0"
 authors = ["Matt Wallick <mcwallick@gmail.com>"]
 edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "skylark"
+path = "src/main.rs"
 
 [features]
 default = ["console_error_panic_hook"]
