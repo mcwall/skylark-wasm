@@ -1,0 +1,11 @@
+6000  #  v0 = 0 (x)
+6104  #  v1 = 4 (y)
+
+#  wait and draw key
+00E0
+F20A  #  v2 = get_key()
+F229  #  load font v2
+D015  #  draw font
+
+
+1200  #  goto top

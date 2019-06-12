@@ -1,0 +1,103 @@
+6000  #  v0 = 0 (x)
+6104  #  v1 = 4 (y)
+
+# draw 0
+6200  #  v2 = 0 (c)
+F229  #  load font v2
+D015  #  draw font
+
+# draw 1
+7006  #  v0 += 6
+6201  #  v2 = 1
+F229  #  load font v2
+D015  #  draw font
+
+# draw 2
+7006  #  v0 += 6
+6202  #  v2 = 2
+F229  #  load font v2
+D015  #  draw font
+
+# draw 3
+7006  #  v0 += 6
+6203  #  v2 = 3
+F229  #  load font v2
+D015  #  draw font
+
+# draw 4
+7006  #  v0 += 6
+6204  #  v2 = 4
+F229  #  load font v2
+D015  #  draw font
+
+# draw 5
+7006  #  v0 += 6
+6205  #  v2 = 5
+F229  #  load font v2
+D015  #  draw font
+
+# draw 6
+7006  #  v0 += 6
+6206  #  v2 = 6
+F229  #  load font v2
+D015  #  draw font
+
+# draw 7
+7006  #  v0 += 6
+6207  #  v2 = 7
+F229  #  load font v2
+D015  #  draw font
+
+
+6000  #  v0 = 0 (x)
+7108  #  v1 += 8 (y)
+
+
+# draw 8
+6208  #  v2 = 8
+F229  #  load font v2
+D015  #  draw font
+
+# draw 9
+7006  #  v0 += 6
+6209  #  v2 = 9
+F229  #  load font v2
+D015  #  draw font
+
+# draw A
+7006  #  v0 += 6
+620A  #  v2 = A
+F229  #  load font v2
+D015  #  draw font
+
+# draw B
+7006  #  v0 += 6
+620B  #  v2 = B
+F229  #  load font v2
+D015  #  draw font
+
+# draw c
+7006  #  v0 += 6
+620C  #  v2 = C
+F229  #  load font v2
+D015  #  draw font
+
+# draw D
+7006  #  v0 += 6
+620D  #  v2 = D
+F229  #  load font v2
+D015  #  draw font
+
+# draw E
+7006  #  v0 += 6
+620E  #  v2 = E
+F229  #  load font v2
+D015  #  draw font
+
+# draw F
+7006  #  v0 += 6
+620F  #  v2 = F
+F229  #  load font v2
+D015  #  draw font
+
+1284  #  infinte loop

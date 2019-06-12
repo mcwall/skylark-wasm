@@ -1,0 +1,8 @@
+# add - no carry
+C0FF  #  v0 = rand()
+C1FF  #  v1 = rand()
+9010  #  v0 != v1
+0000  #  fail
+
+# success
+1208  #  infinte loop
