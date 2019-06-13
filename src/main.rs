@@ -13,12 +13,16 @@ fn run_emulator(file_name: &str){
         Err(e) => panic!("couldn't open {}: {}", file_name, e),
         Ok(file) => file
     };
-    
-    let rom_hex: Vec<String> = rom_bytes.iter().map(|b| {
-        format!("{:02X}", b)
-    }).collect();
 
     emulator.load_rom(rom_bytes);
+
+    loop {
+        thread::sleep(time::Duration::from_millis(10));
+
+        clear_screen();
+        print!("{}", emulator.display_out());
+        emulator.tick();
+    }
 }
 
 fn run_universe(){
