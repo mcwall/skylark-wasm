@@ -17,7 +17,7 @@ fn run_emulator(file_name: &str){
     emulator.load_rom(rom_bytes);
 
     loop {
-        thread::sleep(time::Duration::from_millis(10));
+        thread::sleep(time::Duration::from_millis(200));
 
         clear_screen();
         print!("{}", emulator.display_out());
