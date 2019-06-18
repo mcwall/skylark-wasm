@@ -43,7 +43,7 @@ impl Cpu {
         let c = opcode >> 4 & 0xf;
         let d = opcode & 0xf;
 
-        println!("Executing: 0x{:x?}", opcode);
+        // println!("Executing: 0x{:x?}", opcode);
 
         match (a, b, c, d) {
 
@@ -106,8 +106,9 @@ impl Cpu {
 
             // v[x] += n
             (0x7, x, n1, n2) => {
-                let n = (n1 << 4 | n2) as u8;
-                self.v[x as usize] += n;
+                let n: u16 = n1 << 4 | n2;
+                let res = self.v[x as usize] as u16 + n;
+                self.v[x as usize] = (res % 0xFF) as u8;
             }
 
             // v[x] = v[y]
@@ -226,7 +227,7 @@ impl DisplayFrame {
     }
 
     fn get_index(&self, x: u32, y: u32) -> usize {
-        (x + y * WIDTH) as usize
+        ((x % WIDTH) + (y % HEIGHT) * WIDTH) as usize
     }
 
     pub fn clear(&mut self) {
@@ -237,7 +238,8 @@ impl DisplayFrame {
 
     pub fn draw(&mut self, x: u8, y: u8, sprite: &[u8]) -> bool {
         let mut change = false;
-        println!("Drawing ({}, {}) h{}", x, y, sprite.len());
+        // println!("Drawing ({}, {}) h{}", x, y, sprite.len());
+        let test: Vec<usize> = sprite.iter().map(|s| { *s as usize }).collect();
         for dy in 0..sprite.len() {
             change |= self.draw_sprite(x, y + dy as u8, sprite[dy as usize]);
         }
@@ -245,6 +247,7 @@ impl DisplayFrame {
         change
     }
 
+    // TODO: This can be improved by simply XORing the sprite with existing byte from ram
     fn draw_sprite(&mut self, x: u8, y: u8, sprite: u8) -> bool {
         let mut change = false;
         for i in 0 .. 8 {
@@ -252,7 +255,7 @@ impl DisplayFrame {
             let new_pixel = match sprite >> (7 - i) & 1 {
                 0 => false,
                 _ => true
-            };
+            } ^ self.pixels[index];
 
             change |= self.pixels[index] && !new_pixel;
             self.pixels[index] = new_pixel;

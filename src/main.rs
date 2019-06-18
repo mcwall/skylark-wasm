@@ -15,13 +15,19 @@ fn run_emulator(file_name: &str){
     };
 
     emulator.load_rom(rom_bytes);
+    let mut render = true;
+    let mut now = time::Instant::now();
+    let mut count = 7;
 
     loop {
-        thread::sleep(time::Duration::from_millis(200));
-
-        clear_screen();
-        print!("{}", emulator.display_out());
         emulator.tick();
+        if now.elapsed().as_millis() > 50 {
+            clear_screen();
+            print!("{}", emulator.display_out());
+            now = time::Instant::now();
+        }
+
+        thread::sleep(time::Duration::from_millis(1));
     }
 }
 
