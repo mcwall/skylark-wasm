@@ -4,3 +4,6 @@ pub use self::universe::Cell;
 
 pub mod emulator;
 pub use self::emulator::Emulator;
+
+pub mod cpu;
+pub mod display;
