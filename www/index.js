@@ -1,75 +1,70 @@
-import { Universe, Cell } from "skylark-wasm";
+import { Emulator } from "skylark-wasm";
 import { memory } from "skylark-wasm/skylark_bg";
 
-const CELL_SIZE = 5; // px
+const PIXEL_SIZE = 5; // px
 const GRID_COLOR = "#CCCCCC";
-const DEAD_COLOR = "#FFFFFF";
-const ALIVE_COLOR = "#000000";
+const WHITE = "#FFFFFF";
+const BLACK = "#000000";
 
 // Construct the universe, and get its width and height.
-const universe = Universe.new();
-const width = universe.width();
-const height = universe.height();
+const emulator = Emulator.new();
+const width = emulator.width();
+const height = emulator.height();
+
+var romFile = null;
+var romLoaded = false;
 
 // Give the canvas room for all of our cells and a 1px border
 // around each of them.
 const canvas = document.getElementById("skylark-canvas");
-canvas.height = (CELL_SIZE + 1) * height + 1;
-canvas.width = (CELL_SIZE + 1) * width + 1;
+canvas.height = (PIXEL_SIZE ) * height;
+canvas.width = (PIXEL_SIZE) * width;
 
 const ctx = canvas.getContext('2d');
 
 const renderLoop = () => {
-    universe.tick();
+    if (!romLoaded){
+        if (romFile){
+            console.log(romFile);
+            emulator.load_rom(romFile);
+            romLoaded = true;
+        }
+        else{
+            requestAnimationFrame(renderLoop);
+            return;
+        }
+    }
 
-    drawGrid();
-    drawCells();
+    emulator.tick();
+
+    drawPixels();
 
     requestAnimationFrame(renderLoop);
 };
 
-const drawGrid = () => {
-    ctx.beginPath();
-    ctx.strokeStyle = GRID_COLOR;
-
-    // Vertical lines.
-    for (let i = 0; i <= width; i++) {
-        ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
-        ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * height + 1);
-    }
-
-    // Horizontal lines.
-    for (let j = 0; j <= height; j++) {
-        ctx.moveTo(0, j * (CELL_SIZE + 1) + 1);
-        ctx.lineTo((CELL_SIZE + 1) * width + 1, j * (CELL_SIZE + 1) + 1);
-    }
-
-    ctx.stroke();
+const getIndex = (x, y) => {
+    return x + y * width;
 };
 
-const getIndex = (row, column) => {
-    return row * width + column;
-};
-
-const drawCells = () => {
-    const cellsPtr = universe.cells();
-    const cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+const drawPixels = () => {
+    const pixelsPtr = emulator.pixels();
+    const pixels = new Uint8Array(memory.buffer, pixelsPtr, width * height);
 
     ctx.beginPath();
 
-    for (let row = 0; row < height; row++) {
-        for (let col = 0; col < width; col++) {
-            const idx = getIndex(row, col);
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            const idx = getIndex(x, y);
 
-            ctx.fillStyle = cells[idx] === Cell.Dead
-                ? DEAD_COLOR
-                : ALIVE_COLOR;
+            ctx.fillStyle = pixels[idx]
+                ? WHITE
+                : BLACK;
 
             ctx.fillRect(
-                col * (CELL_SIZE + 1) + 1,
-                row * (CELL_SIZE + 1) + 1,
-                CELL_SIZE,
-                CELL_SIZE
+                x * (PIXEL_SIZE),
+                y * (PIXEL_SIZE),
+                PIXEL_SIZE,
+                PIXEL_SIZE
             );
         }
     }
@@ -77,6 +72,19 @@ const drawCells = () => {
     ctx.stroke();
 };
 
-drawGrid();
-drawCells();
+
+var romInput = document.getElementById('rom-input');
+romInput.onchange = e => { 
+    var fr = new FileReader();
+    fr.onload = () =>  {
+      romFile = new Uint8Array(fr.result);
+      console.log(romFile);
+    };
+
+    fr.readAsArrayBuffer(e.target.files[0]);
+}
+
+drawPixels();
 requestAnimationFrame(renderLoop);
+
+
