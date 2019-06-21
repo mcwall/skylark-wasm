@@ -34,7 +34,7 @@ impl Cpu {
 
     // TODO: Only re-render when display changes
     // TODO: Ram and display should probably be borrowed by Cpu struct, not just this function
-    pub fn tick(&mut self, ram: &mut Vec<u8>, keyboard: &keyboard::Keyboard, display: &mut display::DisplayFrame, timer: &mut timer::Timer, system_time: u64) {
+    pub fn tick(&mut self, ram: &mut Vec<u8>, keyboard: &keyboard::Keyboard, display: &mut display::DisplayFrame, timer: &mut timer::Timer, elapsed_millis: u32) {
         // Decompose opcode into 4 nibbles
         let opcode: u16 = (ram[self.pc] as u16) << 8 | (ram[self.pc + 1] as u16);
         // let opcode: usize = ((ram[self.pc] as u16) << 8 | (ram[self.pc + 1] as u16)) as usize;
@@ -43,7 +43,7 @@ impl Cpu {
         let c = opcode >> 4 & 0xf;
         let d = opcode & 0xf;
 
-        // println!("Executing: 0x{:x?}", opcode);
+        println!("Executing: 0x{:x?}", opcode);
 
         match (a, b, c, d) {
 
@@ -215,7 +215,7 @@ impl Cpu {
 
             // Vx = Timer
             (0xF, x, 0x0, 0x7) => {
-                self.v[x as usize] = timer.get(system_time);
+                self.v[x as usize] = timer.get(elapsed_millis);
             }
 
             // Vx = Key
@@ -228,7 +228,12 @@ impl Cpu {
 
             // Timer = Vx
             (0xF, x, 0x1, 0x5) => {
-                timer.set(x as u8, system_time);
+                timer.set(x as u8, elapsed_millis);
+            }
+
+            // Sound = Vx
+            (0xF, x, 0x1, 0x8) => {
+                //log!("Sound not supported: 0x{:x?}", opcode)
             }
 
             // I += Vx
@@ -255,14 +260,14 @@ impl Cpu {
 
             // Load [I], Vx (reg_dump)
             (0xF, x, 0x5, 0x5) => {
-                for k in 0..x {
+                for k in 0..x + 1 {
                     ram[self.i as usize + k as usize] = self.v[k as usize];
                 }
             }
 
             // Load Vx, [I] (reg_load)
-            (0xF, x, 0x5, 0x5) => {
-                for k in 0..x {
+            (0xF, x, 0x6, 0x5) => {
+                for k in 0..x + 1 {
                     self.v[k as usize] = ram[self.i as usize + k as usize];
                 }
             }

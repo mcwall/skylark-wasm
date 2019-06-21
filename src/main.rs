@@ -2,7 +2,7 @@ use skylark::emu;
 use std::{thread, time, fs};
 
 fn main() {
-    run_emulator("roms/scrolling_logo.ch8");
+    run_emulator("roms/vf_test.ch8");
 }
 
 fn run_emulator(file_name: &str){
@@ -15,15 +15,15 @@ fn run_emulator(file_name: &str){
     };
 
     emulator.load_rom(rom_bytes);
-    let mut render = true;
+    let start_time = time::Instant::now();
     let mut now = time::Instant::now();
-    let mut count = 7;
 
     loop {
-        emulator.tick();
+        let elapsed_millis = start_time.elapsed().as_millis();
+        emulator.tick(elapsed_millis as u32);
         if now.elapsed().as_millis() > 50 {
-            clear_screen();
-            print!("{}", emulator.display_out());
+            //clear_screen();
+            //print!("{}", emulator.display_out());
             now = time::Instant::now();
         }
 

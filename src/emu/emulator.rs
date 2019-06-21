@@ -3,6 +3,14 @@ extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 use super::{ display, cpu, keyboard, timer };
 
+extern crate web_sys;
+
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 // TODO: Maybe usize? Also, these probably shouln't be public
 pub const WIDTH: u32 = 64;
 pub const HEIGHT: u32 = 32;
@@ -55,8 +63,8 @@ impl Emulator {
         self.display.pixels()
     }
 
-    pub fn tick(&mut self) {//, system_time: u64) {
-        self.cpu.tick(&mut self.ram, &self.keyboard, &mut self.display, &mut self.timer, 0)//system_time)
+    pub fn tick(&mut self, elapsed_millis: u32) {
+        self.cpu.tick(&mut self.ram, &self.keyboard, &mut self.display, &mut self.timer, elapsed_millis)
     }
 
     pub fn key_change(&mut self, key: usize, pressed: bool) {

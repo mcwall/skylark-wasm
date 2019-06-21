@@ -12,7 +12,7 @@ const width = emulator.width();
 const height = emulator.height();
 
 var romFile = null;
-var romLoaded = false;
+var running = false;
 
 // Give the canvas room for all of our cells and a 1px border
 // around each of them.
@@ -22,24 +22,7 @@ canvas.width = (PIXEL_SIZE) * width;
 
 const ctx = canvas.getContext('2d');
 
-const renderLoop = () => {
-    if (!romLoaded){
-        if (romFile){
-            emulator.load_rom(romFile);
-            romLoaded = true;
-        }
-        else{
-            requestAnimationFrame(renderLoop);
-            return;
-        }
-    }
-
-    emulator.tick(Date.now());
-
-    drawPixels();
-
-    requestAnimationFrame(renderLoop);
-};
+const startTime = Date.now();
 
 const getIndex = (x, y) => {
     return x + y * width;
@@ -111,7 +94,35 @@ function onKeyChange(e, pressed) {
     }
 }
 
-drawPixels();
+const renderLoop = () => {
+    //console.log('render');
+    if (!running) {
+        requestAnimationFrame(renderLoop);
+        return;
+    }
+
+    drawPixels();
+    requestAnimationFrame(renderLoop);
+};
+
+const tickLoop = () => {
+    //console.log('tick');
+    if (!running){
+        if (romFile){
+            emulator.load_rom(romFile);
+            running = true;
+        }
+        else{
+            return;
+        }
+    }
+
+    // TODO: wasm-bindgen throws runtime error when using u64
+    // Find a better solution to allow passing Date.now()
+    emulator.tick(0);
+}
+
 requestAnimationFrame(renderLoop);
+window.setInterval(tickLoop, 1);
 
 

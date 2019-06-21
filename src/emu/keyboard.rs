@@ -22,7 +22,6 @@ impl Keyboard {
     }
 
     pub fn key_change(&mut self, key: usize, pressed: bool) {
-        log!("Key change: {:?}", self.keys);
         self.keys[key] = pressed;
     }
 
