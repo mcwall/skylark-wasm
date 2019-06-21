@@ -25,7 +25,6 @@ const ctx = canvas.getContext('2d');
 const renderLoop = () => {
     if (!romLoaded){
         if (romFile){
-            console.log(romFile);
             emulator.load_rom(romFile);
             romLoaded = true;
         }
@@ -35,7 +34,7 @@ const renderLoop = () => {
         }
     }
 
-    emulator.tick();
+    emulator.tick(Date.now());
 
     drawPixels();
 
@@ -72,16 +71,44 @@ const drawPixels = () => {
     ctx.stroke();
 };
 
-
+// Register ROM loader
 var romInput = document.getElementById('rom-input');
 romInput.onchange = e => { 
     var fr = new FileReader();
     fr.onload = () =>  {
       romFile = new Uint8Array(fr.result);
-      console.log(romFile);
     };
 
     fr.readAsArrayBuffer(e.target.files[0]);
+}
+
+const keyMapping = {};
+keyMapping[KeyboardEvent.DOM_VK_1] = 0x1;
+keyMapping[KeyboardEvent.DOM_VK_2] = 0x2;
+keyMapping[KeyboardEvent.DOM_VK_3] = 0x3;
+keyMapping[KeyboardEvent.DOM_VK_4] = 0xc;
+keyMapping[KeyboardEvent.DOM_VK_Q] = 0x4;
+keyMapping[KeyboardEvent.DOM_VK_W] = 0x5;
+keyMapping[KeyboardEvent.DOM_VK_E] = 0x6;
+keyMapping[KeyboardEvent.DOM_VK_R] = 0xD;
+keyMapping[KeyboardEvent.DOM_VK_A] = 0x7;
+keyMapping[KeyboardEvent.DOM_VK_S] = 0x8;
+keyMapping[KeyboardEvent.DOM_VK_D] = 0x9;
+keyMapping[KeyboardEvent.DOM_VK_F] = 0xE;
+keyMapping[KeyboardEvent.DOM_VK_Z] = 0xA;
+keyMapping[KeyboardEvent.DOM_VK_X] = 0x0;
+keyMapping[KeyboardEvent.DOM_VK_C] = 0xB;
+keyMapping[KeyboardEvent.DOM_VK_V] = 0xF;
+
+// Register keyboard events
+document.addEventListener('keydown', e => onKeyChange(e, true));
+document.addEventListener('keyup', e => onKeyChange(e, false));
+
+function onKeyChange(e, pressed) {
+    let mappedKey = keyMapping[e.keyCode];
+    if (mappedKey) {
+        emulator.key_change(mappedKey, pressed);
+    }
 }
 
 drawPixels();

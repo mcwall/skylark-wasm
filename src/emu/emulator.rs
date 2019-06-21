@@ -1,8 +1,7 @@
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
-use super::display;
-use super::cpu;
+use super::{ display, cpu, keyboard, timer };
 
 // TODO: Maybe usize? Also, these probably shouln't be public
 pub const WIDTH: u32 = 64;
@@ -17,7 +16,9 @@ pub const FONT_WIDTH: usize = 5;
 pub struct Emulator {
     ram: Vec<u8>,
     cpu: cpu::Cpu,
-    display: display::DisplayFrame
+    display: display::DisplayFrame,
+    keyboard: keyboard::Keyboard,
+    timer: timer::Timer
 }
 
 #[wasm_bindgen]
@@ -26,11 +27,15 @@ impl Emulator {
         let ram = vec![0; RAM_SIZE];
         let cpu = cpu::Cpu::new();
         let display = display::DisplayFrame::new();
+        let keyboard = keyboard::Keyboard::new();
+        let timer = timer::Timer::new();
 
         Emulator {
             ram,
             cpu,
-            display
+            display,
+            keyboard,
+            timer
         }
     }
 
@@ -50,8 +55,12 @@ impl Emulator {
         self.display.pixels()
     }
 
-    pub fn tick(&mut self) {
-        self.cpu.tick(&mut self.ram, &mut self.display);
+    pub fn tick(&mut self) {//, system_time: u64) {
+        self.cpu.tick(&mut self.ram, &self.keyboard, &mut self.display, &mut self.timer, 0)//system_time)
+    }
+
+    pub fn key_change(&mut self, key: usize, pressed: bool) {
+        self.keyboard.key_change(key, pressed)
     }
 
     pub fn width(&self) -> u32 {
