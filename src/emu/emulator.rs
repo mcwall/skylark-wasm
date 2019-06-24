@@ -20,6 +20,13 @@ pub const REG_SIZE: usize = 0x10;
 pub const FONT_OFFSET: usize = 0x0;
 pub const FONT_WIDTH: usize = 5;
 
+// no offiical clock rate, but this works pretty well
+pub const CLOCK_RATE: u32 = 600;
+
+// render should be done at 60Hz
+// it's up to the runtime env to ensure this rate, but emulation will be correct regardless of render rate
+pub const RENDER_RATE: u32 = 60;
+
 #[wasm_bindgen]
 pub struct Emulator {
     ram: Vec<u8>,
@@ -63,8 +70,14 @@ impl Emulator {
         self.display.pixels()
     }
 
-    pub fn tick(&mut self, elapsed_millis: u32) {
-        self.cpu.tick(&mut self.ram, &self.keyboard, &mut self.display, &mut self.timer, elapsed_millis)
+    // tick for 1 frame (60Hz)
+    pub fn tick_frame(&mut self) {
+        let ticks_per_frame = CLOCK_RATE / RENDER_RATE;
+
+        self.timer.decrement();
+        for _ in 0 .. ticks_per_frame{
+            self.cpu.tick(&mut self.ram, &self.keyboard, &mut self.display, &mut self.timer)
+        }
     }
 
     pub fn key_change(&mut self, key: usize, pressed: bool) {

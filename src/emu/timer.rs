@@ -1,39 +1,27 @@
-const RATE: f64 = 60.0;
-
 pub struct Timer {
-    start_time: u32,
-    start_val: u8
+    val: u8
 }
 
 impl Timer {
     pub fn new() -> Timer {
-        let start_time = 0;
-        let start_val = 0;
+        let val = 0;
 
         Timer {
-            start_time,
-            start_val
+            val
         }
     }
 
-    pub fn get(&mut self, current_time: u32) -> u8 {
-        if self.start_val == 0 || self.start_time == 0 {
-            return 0;
-        };
-        
-        let elapsed = (current_time - self.start_time) as f64;
-        let new_val = (self.start_val as f64 - (elapsed / RATE)) as u8;
-
-        if new_val <= 0 || new_val > self.start_val {
-            self.start_val = 0;
-            self.start_time = 0;
-        }
-
-        new_val
+    pub fn get(&self) -> u8 {
+        self.val
     }
 
-    pub fn set(&mut self, val: u8, current_time: u32) {
-        self.start_val = val;
-        self.start_time = current_time;
+    pub fn set(&mut self, val: u8) {
+        self.val = val;
+    }
+
+    pub fn decrement(&mut self) {
+        if self.val > 0 {
+            self.val -= 1;
+        }
     }
 }

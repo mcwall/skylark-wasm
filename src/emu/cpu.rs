@@ -34,7 +34,7 @@ impl Cpu {
 
     // TODO: Only re-render when display changes
     // TODO: Ram and display should probably be borrowed by Cpu struct, not just this function
-    pub fn tick(&mut self, ram: &mut Vec<u8>, keyboard: &keyboard::Keyboard, display: &mut display::DisplayFrame, timer: &mut timer::Timer, elapsed_millis: u32) {
+    pub fn tick(&mut self, ram: &mut Vec<u8>, keyboard: &keyboard::Keyboard, display: &mut display::DisplayFrame, timer: &mut timer::Timer) {
         // Decompose opcode into 4 nibbles
         let opcode: u16 = (ram[self.pc] as u16) << 8 | (ram[self.pc + 1] as u16);
         // let opcode: usize = ((ram[self.pc] as u16) << 8 | (ram[self.pc + 1] as u16)) as usize;
@@ -43,7 +43,7 @@ impl Cpu {
         let c = opcode >> 4 & 0xf;
         let d = opcode & 0xf;
 
-        println!("Executing: 0x{:x?}", opcode);
+        //println!("Executing: 0x{:x?}", opcode);
 
         match (a, b, c, d) {
 
@@ -215,7 +215,7 @@ impl Cpu {
 
             // Vx = Timer
             (0xF, x, 0x0, 0x7) => {
-                self.v[x as usize] = timer.get(elapsed_millis);
+                self.v[x as usize] = timer.get();
             }
 
             // Vx = Key
@@ -228,7 +228,7 @@ impl Cpu {
 
             // Timer = Vx
             (0xF, x, 0x1, 0x5) => {
-                timer.set(x as u8, elapsed_millis);
+                timer.set(self.v[x as usize] as u8);
             }
 
             // Sound = Vx

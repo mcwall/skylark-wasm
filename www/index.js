@@ -2,7 +2,6 @@ import { Emulator } from "skylark-wasm";
 import { memory } from "skylark-wasm/skylark_bg";
 
 const PIXEL_SIZE = 5; // px
-const GRID_COLOR = "#CCCCCC";
 const WHITE = "#FFFFFF";
 const BLACK = "#000000";
 
@@ -21,8 +20,6 @@ canvas.height = (PIXEL_SIZE ) * height;
 canvas.width = (PIXEL_SIZE) * width;
 
 const ctx = canvas.getContext('2d');
-
-const startTime = Date.now();
 
 const getIndex = (x, y) => {
     return x + y * width;
@@ -95,34 +92,20 @@ function onKeyChange(e, pressed) {
 }
 
 const renderLoop = () => {
-    //console.log('render');
-    if (!running) {
-        requestAnimationFrame(renderLoop);
-        return;
-    }
-
-    drawPixels();
-    requestAnimationFrame(renderLoop);
-};
-
-const tickLoop = () => {
-    //console.log('tick');
     if (!running){
         if (romFile){
             emulator.load_rom(romFile);
             running = true;
         }
         else{
+            requestAnimationFrame(renderLoop);
             return;
         }
     }
 
-    // TODO: wasm-bindgen throws runtime error when using u64
-    // Find a better solution to allow passing Date.now()
-    emulator.tick(0);
-}
+    emulator.tick_frame();
+    drawPixels();
+    requestAnimationFrame(renderLoop);
+};
 
 requestAnimationFrame(renderLoop);
-window.setInterval(tickLoop, 1);
-
-
