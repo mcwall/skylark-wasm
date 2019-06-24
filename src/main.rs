@@ -1,8 +1,9 @@
 use skylark::emu;
-use std::{thread, time, fs};
+use std::{thread, time, fs, env};
 
 fn main() {
-    run_emulator("roms/vf_test.ch8");
+    let args: Vec<String> = env::args().collect();
+    run_emulator(&args[1]);
 }
 
 fn run_emulator(file_name: &str){

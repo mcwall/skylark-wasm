@@ -108,7 +108,7 @@ impl Cpu {
             (0x7, x, n1, n2) => {
                 let n: u16 = n1 << 4 | n2;
                 let res = self.v[x as usize] as u16 + n;
-                self.v[x as usize] = (res % 0xFF) as u8;
+                self.v[x as usize] = (res % 0x100) as u8;
             }
 
             // Vx = Vy
@@ -248,10 +248,6 @@ impl Cpu {
 
             // I = BCD(Vx)
             (0xF, x, 0x3, 0x3) => {
-                // memory->write(i, v[x] / 100);
-                // memory->write(i + 1, (v[x] % 100) / 10);
-                // memory->write(i  +2, (v[x] % 10));
-
                 let vx = self.v[x as usize];
                 ram[self.i as usize] = vx / 100;
                 ram[self.i as usize + 1] = (vx % 100) / 10;
